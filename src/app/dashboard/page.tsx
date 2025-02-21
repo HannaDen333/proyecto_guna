@@ -9,11 +9,9 @@ export default function DashboardPage() {
           <h2 className="text-xl font-semibold text-gray-800">Usuarios</h2>
           <div className="space-x-2">
             <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-              Habilitarr
+              Habilitar
             </button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
-              Deshabilitar
-            </button>
+            
           </div>
         </div>
       </div>
@@ -23,29 +21,28 @@ export default function DashboardPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-               Nombre
+               Compañia 
+               del empleado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                x
+            Cedis
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                y
+                Departamento
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-               z
+               Puesto
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                empresa
+              Numero de empleado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                NSS
+                Nombre Completo
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                INGRESO
+                Correo
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ESTATUS
-              </th>
+              
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">

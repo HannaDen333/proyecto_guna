@@ -9,17 +9,17 @@ import {
 const Sidebar = () => {
   const menuItems = [
     {
-      name: 'Inicio',
+      name: 'inicio',
       icon: HomeIcon,
       href: '/dashboard'
     },
     {
-      name: 'Usuarios',
+      name: 'consultar',
       icon: UsersIcon,
       href: '/dashboard/users'
     },
     {
-      name: 'Roles',
+      name: 'consultar',
       icon: UserGroupIcon,
       href: '/dashboard/roles'
     }
