@@ -9,7 +9,7 @@ export default function DashboardPage() {
           <h2 className="text-xl font-semibold text-gray-800">Usuarios</h2>
           <div className="space-x-2">
             <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-              Habilitar
+              Habilitarr
             </button>
             <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
               Deshabilitar
