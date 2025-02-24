@@ -1,9 +1,9 @@
+// src/components/layout/Sidebar.tsx
 'use client';
 import Link from 'next/link';
 import { 
-  UsersIcon, 
-  UserGroupIcon,
-  HomeIcon
+  HomeIcon,
+  DocumentTextIcon 
 } from '@heroicons/react/24/outline';
 
 const Sidebar = () => {
@@ -14,19 +14,14 @@ const Sidebar = () => {
       href: '/dashboard'
     },
     {
-      name: 'Usuarios',
-      icon: UsersIcon,
-      href: '/dashboard/users'
-    },
-    {
-      name: 'Roles',
-      icon: UserGroupIcon,
-      href: '/dashboard/roles'
+      name: 'Proyectos',
+      icon: DocumentTextIcon,
+      href: '/dashboard/projects'
     }
   ];
 
   return (
-    <aside className="bg-white w-64 h-screen border-r">
+    <aside className="bg-white w-64 min-h-screen border-r">
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           Menú Principal
