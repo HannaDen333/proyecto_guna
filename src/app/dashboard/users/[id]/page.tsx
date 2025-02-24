@@ -87,7 +87,7 @@ export default function UserDetailPage() {
             Asignar Rol
           </button>
         </div>
-
+       {/* pensare como implementarlos, preguntar*/}
         {/* Sección de Claims */}
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Claims (Sólo Lectura)</h2>

@@ -1,4 +1,4 @@
-// src/components/users/UserModal.tsx
+
 'use client';
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
@@ -79,7 +79,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
       ...formData
     };
     
-    console.log('Datos completos para habilitar usuario:', fullUserData);
+    console.log('Datos completos para crear usuario:', fullUserData);
     // Aquí iría la lógica para guardar en la base de datos
     
     // Resetear el estado
@@ -115,7 +115,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
           <div className="flex min-h-full items-center justify-center p-4">
             <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
               <Dialog.Title className="text-lg font-semibold text-gray-900">
-                {step === 1 ? 'Buscar Empleado' : 'Habilitar Usuario'}
+                {step === 1 ? 'Buscar Empleado' : 'Crear Usuario'}
               </Dialog.Title>
 
               {step === 1 ? (
@@ -256,7 +256,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                           type="submit"
                           className="rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600"
                         >
-                          Guardar
+                          crear
                         </button>
                       </div>
                     </div>
