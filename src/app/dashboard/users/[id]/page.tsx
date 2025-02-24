@@ -113,7 +113,7 @@ export default function UserDetailPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">No hay claims disponibles.</p>
+            <p className="text-sm text-gray-500">Claims disponibles.</p>
           )}
         </div>
       </div>
