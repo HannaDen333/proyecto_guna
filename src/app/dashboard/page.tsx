@@ -11,7 +11,7 @@ export default function DashboardPage() {
             <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
               Habilitar
             </button>
-            
+           
           </div>
         </div>
       </div>
@@ -21,26 +21,25 @@ export default function DashboardPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-               Compañia 
-               del empleado
+               Compañia del Empleado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Cedis
+                CEDIS
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Departamento
+              Departamento
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-               Puesto
+              Puesto
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Numero de empleado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nombre Completo
+              Nombre completo
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Correo
+              Correo
               </th>
               
             </tr>

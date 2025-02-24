@@ -6,7 +6,7 @@ const Header = () => {
     <header className="bg-white shadow">
       <div className="mx-auto px-4 py-3 flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-gray-800">
-          Panel de Administración de Usuarios
+          Panel de Administración
         </h1>
         <div className="flex items-center gap-4">
           <div className="flex items-center space-x-3">
