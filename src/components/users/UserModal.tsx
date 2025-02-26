@@ -1,6 +1,6 @@
 
 'use client';
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 
 interface UserModalProps {
@@ -9,96 +9,158 @@ interface UserModalProps {
 }
 
 export default function UserModal({ isOpen, onClose }: UserModalProps) {
+  
   const [step, setStep] = useState(1);
+  
+  // Estado para guardar los datos de búsqueda
   const [searchData, setSearchData] = useState({
     compania: '',
     numeroEmpleado: ''
   });
-  const [userData, setUserData] = useState<any>(null);
+  
+  // Estado para guardar los datos del usuario encontrado
+  const [userData, setUserData] = useState(null);
+  
+  // Estado para mostrar cuando se está cargando algo
   const [loading, setLoading] = useState(false);
+  
+  // Estado para guardar los datos del formulario de creación
   const [formData, setFormData] = useState({
     correo: '',
     password: ''
   });
+  
+  // Estado para guardar el error de la contraseña
+  const [passwordError, setPasswordError] = useState('');
 
-  // Lista de compañías (esto normalmente vendría de la base de datos)
+  // Lista de compañías (ejemplo, normalmente vendría de una base de datos)
   const companias = [
-    { id: 1, nombre: 'x' },
-    { id: 2, nombre: 'y' },
-    { id: 3, nombre: 'z' }
+    { id: 1, nombre: 'Distribuidora XYZ' },
+    { id: 2, nombre: 'Comercial ABC' },
+    { id: 3, nombre: 'Logística ACME' }
   ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Esta función maneja los cambios en cualquier input o select
+  const handleChange = (e) => {
+    // Obtenemos el nombre y valor del campo que cambió
     const { name, value } = e.target;
     
+    // Dependiendo del paso, actualizamos el estado correspondiente
     if (step === 1) {
+      // Si estamos en el paso 1, actualizamos los datos de búsqueda
       setSearchData(prev => ({ ...prev, [name]: value }));
     } else {
+      // Si estamos en el paso 2, actualizamos los datos del formulario
       setFormData(prev => ({ ...prev, [name]: value }));
+      
+      // Si el campo que cambió es la contraseña, validamos
+      if (name === 'password') {
+        validatePassword(value);
+      }
     }
   };
+  if
 
-  const handleSearch = async (e: React.FormEvent) => {
+  // Función para validar la contraseña
+  const validatePassword = (password) => {
+    // Verificamos si tiene al menos 6 caracteres
+    if (password.length < 6) {
+      setPasswordError('La contraseña debe tener al menos 6 caracteres');
+      return false;
+    }
+ 
+    
+
+    
+    // Verificamos si tiene al menos una mayúscula
+    if (!/[A-Z]/.test(password)) {
+      setPasswordError('La contraseña debe tener al menos una letra mayúscula');
+      return false;
+    }
+    
+    // Verificamos si tiene al menos un caracter especial
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      setPasswordError('La contraseña debe tener al menos un carácter especial');
+      return false;
+    }
+    
+    // Si pasa todas las validaciones, limpiamos el error
+    setPasswordError('');
+    return true;
+  };
+
+  // Función para buscar un empleado (simula una llamada a API)
+  const handleSearch = (e) => {
+    // Evita que la página se recargue al enviar el formulario
     e.preventDefault();
+    
+    // Activa el estado de carga
     setLoading(true);
     
-    try {
-      // Simulando una llamada a la API
-      // En una implementación real, esto sería una llamada fetch/axios
-      console.log('Buscando empleado:', searchData);
+    // Simulamos una llamada a una API con un retraso de 1 segundo
+    setTimeout(() => {
+      // Estos serían los datos que vendrian de la base de datos
+      const mockUser = {
+        compania: 'Distribuidora XYZ',
+        cedis: '001',
+        departamento: 'IT',
+        puesto: 'Desarrollador',
+        numeroEmpleado: searchData.numeroEmpleado,
+        nombreCompleto: 'Juan Pérez',
+      };
       
-      // Simulando datos de respuesta
-      setTimeout(() => {
-        const mockUser = {
-          compania: 'Distribuidora X',
-          cedis: '001',
-          departamento: 'IT',
-          puesto: 'Desarrollador',
-          numeroEmpleado: searchData.numeroEmpleado,
-          nombreCompleto: 'Juan Pérez',
-        };
-        //
-        
-        setUserData(mockUser);
-        setLoading(false);
-        setStep(2);
-      }, 1000);
+      // Guardamos los datos del usuario encontrado
+      setUserData(mockUser);
       
-    } catch (error) {
-      console.error('Error al buscar empleado:', error);
+      // Desactivamos el estado de carga
       setLoading(false);
-    }
+      
+      // Avanzamos al paso 2
+      setStep(2);
+    }, 1000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Función para enviar el formulario completo
+  const handleSubmit = (e) => {
+    // Evita que la página se recargue
     e.preventDefault();
     
-    // Combinamos los datos del usuario con correo y contraseña
+    // Validamos la contraseña antes de enviar
+    if (!validatePassword(formData.password)) {
+      return; // Si hay error, no continuamos
+    }
+    
+    // Combinamos los datos del usuario y el formulario
     const fullUserData = {
       ...userData,
       ...formData
     };
     
-    console.log('Datos completos para crear usuario:', fullUserData);
-    // Aquí iría la lógica para guardar en la base de datos
+    // Aquí iría el código para guardar en la base de datos
+    console.log('Datos para crear usuario:', fullUserData);
     
-    // Resetear el estado
+    // Reiniciamos todos los estados
     setStep(1);
     setSearchData({ compania: '', numeroEmpleado: '' });
     setUserData(null);
     setFormData({ correo: '', password: '' });
+    setPasswordError('');
     
+    // Cerramos el modal
     onClose();
   };
 
+  // Función para volver al paso 1
   const resetForm = () => {
     setStep(1);
     setUserData(null);
   };
 
   return (
+    // Esto es el modal que aparece y desaparece con animación
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
+        {/* Fondo oscuro detrás del modal */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -111,15 +173,19 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
           <div className="fixed inset-0 bg-black/25" />
         </Transition.Child>
 
+        {/* Contenido del modal */}
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
             <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+              {/* Título del modal que cambia según el paso */}
               <Dialog.Title className="text-lg font-semibold text-gray-900">
                 {step === 1 ? 'Buscar Empleado' : 'Crear Usuario'}
               </Dialog.Title>
 
+              {/* Paso 1: Formulario de búsqueda */}
               {step === 1 ? (
                 <form onSubmit={handleSearch} className="mt-4 space-y-4">
+                  {/* Selector de compañía */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Compañía del Empleado
@@ -140,6 +206,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                     </select>
                   </div>
                   
+                  {/* Campo para número de empleado */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Número de Empleado
@@ -153,6 +220,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                         className="block w-full rounded-l-md border border-gray-300 px-3 py-2"
                         required
                       />
+                      {/* Botón de búsqueda */}
                       <button
                         type="submit"
                         className="rounded-r-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600"
@@ -163,6 +231,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                     </div>
                   </div>
 
+                  {/* Botón de cancelar */}
                   <div className="mt-6 flex justify-end">
                     <button
                       type="button"
@@ -174,7 +243,9 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                   </div>
                 </form>
               ) : (
+                /* Paso 2: Formulario para completar datos del usuario */
                 <form onSubmit={handleSubmit} className="mt-4">
+                  {/* Mostrar datos del empleado encontrado */}
                   {userData && (
                     <div className="bg-gray-50 p-4 rounded-md mb-4">
                       <h3 className="text-sm font-semibold mb-2">Datos del Empleado:</h3>
@@ -208,6 +279,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                   )}
 
                   <div className="space-y-4">
+                    {/* Campo para correo electrónico */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Correo Electrónico
@@ -222,6 +294,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                       />
                     </div>
                     
+                    {/* Campo para contraseña con validación */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Contraseña
@@ -231,12 +304,24 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        className={`mt-1 block w-full rounded-md border ${
+                          passwordError ? 'border-red-500' : 'border-gray-300'
+                        } px-3 py-2`}
                         required
                       />
+                      {/* Mostrar mensaje de error si hay uno */}
+                      {passwordError && (
+                        <p className="mt-1 text-sm text-red-500">{passwordError}</p>
+                      )}
+                      {/* Instrucciones para la contraseña */}
+                      <p className="mt-1 text-xs text-gray-500">
+                        La contraseña debe tener al menos 6 caracteres, una letra mayúscula y un carácter especial.
+                      </p>
                     </div>
 
+                    {/* Botones de acción */}
                     <div className="mt-6 flex justify-between">
+                      {/* Botón para volver al paso 1 */}
                       <button
                         type="button"
                         className="rounded-md border border-gray-300 px-4 py-2 text-sm"
@@ -245,6 +330,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                         Volver
                       </button>
                       <div className="space-x-3">
+                        {/* Botón para cancelar */}
                         <button
                           type="button"
                           className="rounded-md border border-gray-300 px-4 py-2 text-sm"
@@ -252,11 +338,15 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
                         >
                           Cancelar
                         </button>
+                        {/* Botón para guardar */}
                         <button
                           type="submit"
-                          className="rounded-md bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600"
+                          className={`rounded-md bg-blue-500 px-4 py-2 text-sm text-white ${
+                            passwordError ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+                          }`}
+                          disabled={!!passwordError}
                         >
-                          crear
+                          Guardar
                         </button>
                       </div>
                     </div>
