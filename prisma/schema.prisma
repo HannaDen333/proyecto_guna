@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,469 @@ generator client {
 datasource db {
   provider = "sqlserver"
   url      = env("DATABASE_URL")
+}
+
+model EFMigrationsHistory {
+  MigrationId    String @id(map: "PK___EFMigrationsHistory") @db.NVarChar(150)
+  ProductVersion String @db.NVarChar(32)
+
+  @@map("__EFMigrationsHistory")
+}
+
+model ApiClaims {
+  Id            Int          @id(map: "PK_ApiClaims") @default(autoincrement())
+  Type          String       @db.NVarChar(200)
+  ApiResourceId Int
+  ApiResources  ApiResources @relation(fields: [ApiResourceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ApiClaims_ApiResources_ApiResourceId")
+}
+
+model ApiProperties {
+  Id            Int          @id(map: "PK_ApiProperties") @default(autoincrement())
+  Key           String       @db.NVarChar(250)
+  Value         String       @db.NVarChar(2000)
+  ApiResourceId Int
+  ApiResources  ApiResources @relation(fields: [ApiResourceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ApiProperties_ApiResources_ApiResourceId")
+}
+
+model ApiResources {
+  Id            Int             @id(map: "PK_ApiResources") @default(autoincrement())
+  Enabled       Boolean
+  Name          String          @db.NVarChar(200)
+  DisplayName   String?         @db.NVarChar(200)
+  Description   String?
+  Created       DateTime
+  Updated       DateTime?
+  LastAccessed  DateTime?
+  NonEditable   Boolean
+  ApiClaims     ApiClaims[]
+  ApiProperties ApiProperties[]
+  ApiScopes     ApiScopes[]
+  ApiSecrets    ApiSecrets[]
+}
+
+model ApiScopeClaims {
+  Id         Int       @id(map: "PK_ApiScopeClaims") @default(autoincrement())
+  Type       String    @db.NVarChar(200)
+  ApiScopeId Int
+  ApiScopes  ApiScopes @relation(fields: [ApiScopeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ApiScopeClaims_ApiScopes_ApiScopeId")
+}
+
+model ApiScopes {
+  Id                      Int              @id(map: "PK_ApiScopes") @default(autoincrement())
+  Name                    String           @db.NVarChar(200)
+  DisplayName             String?          @db.NVarChar(200)
+  Description             String?
+  Required                Boolean
+  Emphasize               Boolean
+  ShowInDiscoveryDocument Boolean
+  ApiResourceId           Int
+  ApiScopeClaims          ApiScopeClaims[]
+  ApiResources            ApiResources     @relation(fields: [ApiResourceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ApiScopes_ApiResources_ApiResourceId")
+}
+
+model ApiSecrets {
+  Id            Int          @id(map: "PK_ApiSecrets") @default(autoincrement())
+  Description   String?
+  Value         String       @db.NVarChar(4000)
+  Expiration    DateTime?
+  Type          String       @db.NVarChar(250)
+  Created       DateTime
+  ApiResourceId Int
+  ApiResources  ApiResources @relation(fields: [ApiResourceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ApiSecrets_ApiResources_ApiResourceId")
+}
+
+model ApplicationVersion {
+  ApplicationId String @id(map: "PK__Applicat__C93A4C99150D667B") @db.NVarChar(450)
+  Version       String @db.VarChar(50)
+}
+
+model AspNetRoleClaims {
+  Id          Int         @id(map: "PK_AspNetRoleClaims") @default(autoincrement())
+  RoleId      String      @db.NVarChar(450)
+  ClaimType   String?     @db.NVarChar(Max)
+  ClaimValue  String?     @db.NVarChar(Max)
+  AspNetRoles AspNetRoles @relation(fields: [RoleId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AspNetRoleClaims_AspNetRoles_RoleId")
+}
+
+model AspNetRoles {
+  Id               String             @id(map: "PK_AspNetRoles") @db.NVarChar(450)
+  Name             String?            @db.NVarChar(256)
+  NormalizedName   String?            @db.NVarChar(256)
+  ConcurrencyStamp String?            @db.NVarChar(Max)
+  AspNetRoleClaims AspNetRoleClaims[]
+  AspNetUserRoles  AspNetUserRoles[]
+  RoleApplications RoleApplications[]
+}
+
+model AspNetUserClaims {
+  Id          Int         @id(map: "PK_AspNetUserClaims") @default(autoincrement())
+  UserId      String      @db.NVarChar(450)
+  ClaimType   String?     @db.NVarChar(Max)
+  ClaimValue  String?     @db.NVarChar(Max)
+  AspNetUsers AspNetUsers @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AspNetUserClaims_AspNetUsers_UserId")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model AspNetUserClaimsDuplicated {
+  UserId     String  @db.NVarChar(450)
+  ClaimType  String? @db.NVarChar(Max)
+  ClaimValue String? @db.NVarChar(Max)
+  total      Int?
+
+  @@ignore
+}
+
+model AspNetUserLogins {
+  LoginProvider       String      @db.NVarChar(450)
+  ProviderKey         String      @db.NVarChar(450)
+  ProviderDisplayName String?     @db.NVarChar(Max)
+  UserId              String      @db.NVarChar(450)
+  AspNetUsers         AspNetUsers @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AspNetUserLogins_AspNetUsers_UserId")
+
+  @@id([LoginProvider, ProviderKey], map: "PK_AspNetUserLogins")
+}
+
+model AspNetUserRoles {
+  UserId        String      @db.NVarChar(450)
+  RoleId        String      @db.NVarChar(450)
+  ApplicationId String      @db.NVarChar(450)
+  AspNetRoles   AspNetRoles @relation(fields: [RoleId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AspNetUserRoles_AspNetRoles_RoleId")
+  AspNetUsers   AspNetUsers @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AspNetUserRoles_AspNetUsers_UserId")
+
+  @@id([UserId, RoleId, ApplicationId], map: "PK_AspNetUserRoles")
+}
+
+model AspNetUsers {
+  Id                   String             @id(map: "PK_AspNetUsers") @db.NVarChar(450)
+  UserName             String?            @db.NVarChar(256)
+  NormalizedUserName   String?            @db.NVarChar(256)
+  Email                String?            @db.NVarChar(256)
+  NormalizedEmail      String?            @db.NVarChar(256)
+  EmailConfirmed       Boolean
+  PasswordHash         String?            @db.NVarChar(Max)
+  SecurityStamp        String?            @db.NVarChar(Max)
+  ConcurrencyStamp     String?            @db.NVarChar(Max)
+  PhoneNumber          String?            @db.NVarChar(Max)
+  PhoneNumberConfirmed Boolean
+  TwoFactorEnabled     Boolean
+  LockoutEnd           DateTime?          @db.DateTimeOffset
+  LockoutEnabled       Boolean
+  AccessFailedCount    Int
+  isEnabled            Boolean
+  AspNetUserClaims     AspNetUserClaims[]
+  AspNetUserLogins     AspNetUserLogins[]
+  AspNetUserRoles      AspNetUserRoles[]
+  AspNetUserTokens     AspNetUserTokens[]
+}
+
+model AspNetUserTokens {
+  UserId        String      @db.NVarChar(450)
+  LoginProvider String      @db.NVarChar(450)
+  Name          String      @db.NVarChar(450)
+  Value         String?     @db.NVarChar(Max)
+  AspNetUsers   AspNetUsers @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AspNetUserTokens_AspNetUsers_UserId")
+
+  @@id([UserId, LoginProvider, Name], map: "PK_AspNetUserTokens")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model bkSecurityMenus {
+  Id              Int
+  ApplicationId   String  @db.NVarChar(450)
+  RoleId          String  @db.NVarChar(100)
+  MenuName        String  @db.VarChar(Max)
+  MenuDescription String? @db.NVarChar(Max)
+  ParentId        Int
+  isVisible       Int     @db.TinyInt
+  isSelectable    Int     @db.TinyInt
+  NavigateUrl     String  @db.NVarChar(Max)
+
+  @@ignore
+}
+
+model ClientClaims {
+  Id       Int     @id(map: "PK_ClientClaims") @default(autoincrement())
+  Type     String  @db.NVarChar(250)
+  Value    String  @db.NVarChar(250)
+  ClientId Int
+  Clients  Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientClaims_Clients_ClientId")
+}
+
+model ClientCorsOrigins {
+  Id       Int     @id(map: "PK_ClientCorsOrigins") @default(autoincrement())
+  Origin   String  @db.NVarChar(150)
+  ClientId Int
+  Clients  Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientCorsOrigins_Clients_ClientId")
+}
+
+model ClientGrantTypes {
+  Id        Int     @id(map: "PK_ClientGrantTypes") @default(autoincrement())
+  GrantType String  @db.NVarChar(250)
+  ClientId  Int
+  Clients   Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientGrantTypes_Clients_ClientId")
+}
+
+model ClientIdPRestrictions {
+  Id       Int     @id(map: "PK_ClientIdPRestrictions") @default(autoincrement())
+  Provider String  @db.NVarChar(200)
+  ClientId Int
+  Clients  Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientIdPRestrictions_Clients_ClientId")
+}
+
+model ClientPostLogoutRedirectUris {
+  Id                    Int     @id(map: "PK_ClientPostLogoutRedirectUris") @default(autoincrement())
+  PostLogoutRedirectUri String  @db.NVarChar(2000)
+  ClientId              Int
+  Clients               Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientPostLogoutRedirectUris_Clients_ClientId")
+}
+
+model ClientProperties {
+  Id       Int     @id(map: "PK_ClientProperties") @default(autoincrement())
+  Key      String  @db.NVarChar(250)
+  Value    String  @db.NVarChar(2000)
+  ClientId Int
+  Clients  Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientProperties_Clients_ClientId")
+}
+
+model ClientRedirectUris {
+  Id          Int     @id(map: "PK_ClientRedirectUris") @default(autoincrement())
+  RedirectUri String  @db.NVarChar(2000)
+  ClientId    Int
+  Clients     Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientRedirectUris_Clients_ClientId")
+}
+
+model Clients {
+  Id                                Int                            @id(map: "PK_Clients") @default(autoincrement())
+  Enabled                           Boolean
+  ClientId                          String                         @db.NVarChar(200)
+  ProtocolType                      String                         @db.NVarChar(200)
+  RequireClientSecret               Boolean
+  ClientName                        String?                        @db.NVarChar(200)
+  Description                       String?
+  ClientUri                         String?                        @db.NVarChar(2000)
+  LogoUri                           String?                        @db.NVarChar(2000)
+  RequireConsent                    Boolean
+  AllowRememberConsent              Boolean
+  AlwaysIncludeUserClaimsInIdToken  Boolean
+  RequirePkce                       Boolean
+  AllowPlainTextPkce                Boolean
+  AllowAccessTokensViaBrowser       Boolean
+  FrontChannelLogoutUri             String?                        @db.NVarChar(2000)
+  FrontChannelLogoutSessionRequired Boolean
+  BackChannelLogoutUri              String?                        @db.NVarChar(2000)
+  BackChannelLogoutSessionRequired  Boolean
+  AllowOfflineAccess                Boolean
+  IdentityTokenLifetime             Int
+  AccessTokenLifetime               Int
+  AuthorizationCodeLifetime         Int
+  ConsentLifetime                   Int?
+  AbsoluteRefreshTokenLifetime      Int
+  SlidingRefreshTokenLifetime       Int
+  RefreshTokenUsage                 Int
+  UpdateAccessTokenClaimsOnRefresh  Boolean
+  RefreshTokenExpiration            Int
+  AccessTokenType                   Int
+  EnableLocalLogin                  Boolean
+  IncludeJwtId                      Boolean
+  AlwaysSendClientClaims            Boolean
+  ClientClaimsPrefix                String?                        @db.NVarChar(200)
+  PairWiseSubjectSalt               String?                        @db.NVarChar(200)
+  Created                           DateTime
+  Updated                           DateTime?
+  LastAccessed                      DateTime?
+  UserSsoLifetime                   Int?
+  UserCodeType                      String?                        @db.NVarChar(100)
+  DeviceCodeLifetime                Int
+  NonEditable                       Boolean
+  ClientClaims                      ClientClaims[]
+  ClientCorsOrigins                 ClientCorsOrigins[]
+  ClientGrantTypes                  ClientGrantTypes[]
+  ClientIdPRestrictions             ClientIdPRestrictions[]
+  ClientPostLogoutRedirectUris      ClientPostLogoutRedirectUris[]
+  ClientProperties                  ClientProperties[]
+  ClientRedirectUris                ClientRedirectUris[]
+  ClientScopes                      ClientScopes[]
+  ClientSecrets                     ClientSecrets[]
+}
+
+model ClientScopes {
+  Id       Int     @id(map: "PK_ClientScopes") @default(autoincrement())
+  Scope    String  @db.NVarChar(200)
+  ClientId Int
+  Clients  Clients @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientScopes_Clients_ClientId")
+}
+
+model ClientSecrets {
+  Id          Int       @id(map: "PK_ClientSecrets") @default(autoincrement())
+  Description String?   @db.NVarChar(2000)
+  Value       String    @db.NVarChar(4000)
+  Expiration  DateTime?
+  Type        String    @db.NVarChar(250)
+  Created     DateTime
+  ClientId    Int
+  Clients     Clients   @relation(fields: [ClientId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ClientSecrets_Clients_ClientId")
+}
+
+model DeviceCodes {
+  UserCode     String   @id(map: "PK_DeviceCodes") @db.NVarChar(200)
+  DeviceCode   String   @db.NVarChar(200)
+  SubjectId    String?  @db.NVarChar(200)
+  ClientId     String   @db.NVarChar(200)
+  CreationTime DateTime
+  Expiration   DateTime
+  Data         String   @db.NVarChar(Max)
+}
+
+model IdentityClaims {
+  Id                 Int               @id(map: "PK_IdentityClaims") @default(autoincrement())
+  Type               String            @db.NVarChar(200)
+  IdentityResourceId Int
+  IdentityResources  IdentityResources @relation(fields: [IdentityResourceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_IdentityClaims_IdentityResources_IdentityResourceId")
+}
+
+model IdentityProperties {
+  Id                 Int               @id(map: "PK_IdentityProperties") @default(autoincrement())
+  Key                String            @db.NVarChar(250)
+  Value              String            @db.NVarChar(2000)
+  IdentityResourceId Int
+  IdentityResources  IdentityResources @relation(fields: [IdentityResourceId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_IdentityProperties_IdentityResources_IdentityResourceId")
+}
+
+model IdentityResources {
+  Id                      Int                  @id(map: "PK_IdentityResources") @default(autoincrement())
+  Enabled                 Boolean
+  Name                    String               @db.NVarChar(200)
+  DisplayName             String?              @db.NVarChar(200)
+  Description             String?
+  Required                Boolean
+  Emphasize               Boolean
+  ShowInDiscoveryDocument Boolean
+  Created                 DateTime
+  Updated                 DateTime?
+  NonEditable             Boolean
+  IdentityClaims          IdentityClaims[]
+  IdentityProperties      IdentityProperties[]
+}
+
+model MenusCompanies {
+  MenuId            Int
+  CompanyId         String            @db.NVarChar(450)
+  SecurityCompanies SecurityCompanies @relation(fields: [CompanyId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_MenusCompanies_SecurityCompanies_CompanyId")
+
+  @@id([CompanyId, MenuId], map: "PK_MenusCompanies")
+}
+
+model PersistedGrants {
+  Key          String    @id(map: "PK_PersistedGrants") @db.NVarChar(200)
+  Type         String    @db.NVarChar(50)
+  SubjectId    String?   @db.NVarChar(200)
+  ClientId     String    @db.NVarChar(200)
+  CreationTime DateTime
+  Expiration   DateTime?
+  Data         String    @db.NVarChar(Max)
+}
+
+model RoleApplications {
+  Id                String            @db.NVarChar(450)
+  RoleId            String            @db.NVarChar(450)
+  CompanyId         String            @db.NVarChar(450)
+  AspNetRoles       AspNetRoles       @relation(fields: [RoleId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_RoleApplications_AspNetRoles_RoleId")
+  SecurityCompanies SecurityCompanies @relation(fields: [CompanyId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_RoleApplications_SecurityCompanies_CompanyId")
+
+  @@id([Id, CompanyId, RoleId], map: "PK_RoleApplications")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model SecurityApplicationLogin {
+  LoginDate     DateTime @default(dbgenerated("2020-02-17T12:00:30.8809297-06:00"), map: "DF__SecurityA__Login__0A9D95DB")
+  ApplicationId String   @db.NVarChar(Max)
+  UserId        String   @db.NVarChar(Max)
+
+  @@ignore
+}
+
+model SecurityApplicationSystems {
+  Id              String  @id(map: "PK_SecurityApplicationSystems") @db.NVarChar(100)
+  ApplicationId   String  @db.NVarChar(450)
+  ApplicationName String  @db.NVarChar(Max)
+  Description     String? @db.NVarChar(Max)
+  ApplicationUri  String? @db.NVarChar(Max)
+  isMulticompany  Boolean @default(dbgenerated("CONVERT([bit],(0))"), map: "DF__SecurityA__isMul__5FB337D6")
+}
+
+model SecurityCompanies {
+  Id                   String                @unique(map: "AK_SecurityCompanies_Id") @db.NVarChar(450)
+  KeyCompany           String                @db.NVarChar(450)
+  CompanyName          String                @db.NChar(255)
+  OrganizationId       String?               @db.NVarChar(450)
+  MenusCompanies       MenusCompanies[]
+  RoleApplications     RoleApplications[]
+  SecurityOrganization SecurityOrganization? @relation(fields: [OrganizationId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SecurityCompanies_SecurityOrganization_OrganizationId")
+
+  @@id([Id, KeyCompany], map: "PK_SecurityCompanies")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model SecurityGroups {
+  Id                     String? @db.NVarChar(Max)
+  SecurityOrganizationId Int
+
+  @@ignore
+}
+
+model SecurityMenuAction {
+  Id            Int
+  IdMenu        Int
+  ApplicationId String @db.NVarChar(450)
+  RoleId        String @db.NVarChar(100)
+  ActionName    String @db.VarChar(Max)
+  Isvisible     Int    @db.TinyInt
+
+  @@id([Id, IdMenu, ApplicationId, RoleId], map: "PK__Security__4FB29369085FA600")
+}
+
+model SecurityMenuImages {
+  imageId     Int     @id(map: "PK__Security__336E9B553B1EFDB3") @default(autoincrement())
+  Description String? @db.NVarChar(Max)
+  urlBase64   String? @db.NVarChar(Max)
+}
+
+model SecurityMenus {
+  Id              Int
+  ApplicationId   String  @db.NVarChar(450)
+  RoleId          String  @db.NVarChar(100)
+  MenuName        String  @db.VarChar(Max)
+  MenuDescription String? @db.NVarChar(Max)
+  ParentId        Int
+  isVisible       Int     @default(dbgenerated("CONVERT([tinyint],(1))"), map: "DF__SecurityM__isVis__48CFD27E") @db.TinyInt
+  isSelectable    Int     @default(dbgenerated("CONVERT([tinyint],(0))"), map: "DF__SecurityM__isSel__49C3F6B7") @db.TinyInt
+  NavigateUrl     String  @db.NVarChar(Max)
+  Icon            String? @db.NVarChar(Max)
+  Orden           Int?
+  ImageId         Int?
+
+  @@id([Id, ApplicationId, RoleId], map: "PK_SecurityMenus")
+}
+
+model SecurityOrganization {
+  Id                String              @id(map: "PK_SecurityOrganization") @db.NVarChar(450)
+  OrganizationId    String              @db.NVarChar(Max)
+  OrganizationName  String              @db.NVarChar(Max)
+  SecurityCompanies SecurityCompanies[]
+}
+
+model SecurityUserApplicationSystems {
+  UserId        String  @db.NVarChar(450)
+  ApplicationId String  @db.NVarChar(450)
+  isBlocked     Boolean
+
+  @@id([ApplicationId, UserId], map: "PK_SecurityUserApplicationSystems")
+}
+
+model SecurityUserDataCompanies {
+  ApplicationId String @db.NVarChar(450)
+  UserId        String @db.NVarChar(450)
+  CompanyId     String @db.NVarChar(450)
+
+  @@id([CompanyId, ApplicationId, UserId], map: "PK_SecurityUserDataCompanies")
 }
