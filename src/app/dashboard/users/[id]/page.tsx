@@ -148,7 +148,7 @@ export default function UserDetailPage() {
               </button>
             </div>
           </div>
-          
+         
           {/* Roles del Proyecto Seleccionado */}
           <div className="border rounded-lg overflow-hidden lg:col-span-2">
             <div className="bg-gray-50 px-4 py-2 border-b">

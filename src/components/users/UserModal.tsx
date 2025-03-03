@@ -3,6 +3,7 @@
 'use client';
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { PrismaClient } from '@prisma/client/extension';
 
 interface UserModalProps {
   isOpen: boolean;
@@ -132,6 +133,7 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
 
   // Función para enviar el formulario completo
   const handleSubmit = (e) => {
+    
     // Evita que la página se recargue
     e.preventDefault();
     
