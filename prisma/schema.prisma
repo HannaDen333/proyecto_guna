@@ -472,13 +472,21 @@ model SecurityUserDataCompanies {
   @@id([CompanyId, ApplicationId, UserId], map: "PK_SecurityUserDataCompanies")
 }
 model vwUserInfo {
-  UserId         String  @id
-  UserName       String?
-  Email          String?
-  EmployeeNumber String?
-  KeyCompany     String?
-  Name           String?
-  IsActive       String?
+  UserId            String   @id
+  UserName          String?
+  Email             String?
+  KeyCompany        String?
+  AreaKey           String?
+  AreaName          String?
+  KeyUnit           String?
+  UnitName          String?
+  KeyDepartment     String?
+  DepartmentName    String?
+  KeyPlace          String?
+  PlaceName         String?
+  EmployeeNumber    String?
+  Name              String?
+  IsActive          String?
 
-  @@map("vw_UserInfo") 
+  @@map("vw_UserInfo")
 }
