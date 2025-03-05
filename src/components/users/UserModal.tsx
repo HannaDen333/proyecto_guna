@@ -42,9 +42,9 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
 
   // DE LA BASE DE DATOS
   const companias = [
-    { id: 1, nombre: 'Distribuidora X' },
-    { id: 2, nombre: 'Comercial Y' },
-    { id: 3, nombre: 'Logística Z' }
+    { id: 1, nombre: '1' },
+    { id: 2, nombre: '3' },
+    
   ];
 
   // Esta función maneja los cambios en cualquier input o select
@@ -112,11 +112,11 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
     setTimeout(() => {
       // Estos serían los datos que vendrian de la base de datos
       const mockUser = {
-        compania: 'Distribuidora XYZ',
-        cedis: '001',
-        departamento: 'IT',
-        puesto: 'Desarrollador',
-        numeroEmpleado: searchData.numeroEmpleado,
+        Compania: 'Distribuidora XYZ',
+        Unidad: '001',
+        Departamento: 'IT',
+        Puesto: 'Desarrollador',
+        NumeroEmpleado: searchData.numeroEmpleado,
         nombreCompleto: 'Juan Pérez',
       };
       

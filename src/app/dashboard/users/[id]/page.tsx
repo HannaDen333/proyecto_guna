@@ -11,14 +11,14 @@ export default function UserDetailPage() {
 
   // En una implementación real, estos datos vendrían de la API
   const user = {
-    compania: 'Distribuidora XYZ',
-    cedis: '001',
-    departamento: 'IT',
-    puesto: 'Desarrollador',
-    numeroEmpleado: '12345',
-    nombreCompleto: 'Juan Pérez',
+    Compania: '1',
+    Unidad: '001',
+    Departamento: 'IT',
+    Puesto: 'Desarrollador',
+    NumeroEmpleado: '12345',
+    NombreCompleto: 'Juan Pérez',
     correo: 'juan.perez@example.com',
-    rfc: 'PEJF851230XYZ',
+    
     telefono: '555-123-4567',
     claims: [
       { type: 'Nombre', value: 'Juan Pérez' },
@@ -143,7 +143,7 @@ export default function UserDetailPage() {
                   </div>
                 </div>
               ))}
-              <button className="mt-3 w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg shadow-lg hover:bg-blue-700 transition">
                 Asignar Nuevo Proyecto
               </button>
             </div>
