@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
-    // Intentar buscar directamente en la vista
+    // BUSCA DIRECTAMENTE DE LA VISTA
     const users = await prisma.$queryRaw`SELECT * FROM vw_UserInfo`
     return NextResponse.json(users)
   } catch (error) {
