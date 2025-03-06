@@ -490,3 +490,16 @@ model vwUserInfo {
 
   @@map("vw_UserInfo")
 }
+
+model vw_UsuariosProyectosRoless {
+  UserId              String  @id @map("UserId")
+  NombreUsuario       String? @map("NombreUsuario")
+  ProyectoId          String  @map("ProyectoId")
+  NombreProyecto      String? @map("NombreProyecto")
+  DescripcionProyecto String? @map("DescripcionProyecto")
+  RolId               String  @map("RolId")
+  NombreRol           String? @map("NombreRol")
+  NombreNormalizado   String? @map("NombreNormalizado")
+
+  @@map("vw_UsuariosProyectosRoless")
+}
