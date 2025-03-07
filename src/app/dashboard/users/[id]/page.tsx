@@ -1,4 +1,5 @@
-//src/app/dashboard/users/[id]/page.tsx
+// src/app/dashboard/users/[id]/page.tsx
+
 'use client';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -32,8 +33,8 @@ interface UserInfo {
 }
 interface userRole {
   id : string;
-
 }
+
 export default function UserDetailPage() {
   const params = useParams();
   const userId = params.id as string;
@@ -130,7 +131,7 @@ export default function UserDetailPage() {
           <div>
             <h3 className="text-sm font-medium text-gray-500">COMPAÑÍA</h3>
             <p className="mt-1 text-sm text-gray-900">{user.KeyCompany || '-'}</p>
-          </div>
+            </div>
           
           <div>
             <h3 className="text-sm font-medium text-gray-500">ÁREA</h3>
@@ -159,95 +160,104 @@ export default function UserDetailPage() {
         </div>
       </div>
 
-      {/* Sección de Proyectos y Roles */}
+      {/* Sección de Proyectos y Roles - Diseño Dashboard */}
       <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Proyectos y Roles</h2>
+        <h2 className="text-xl font-semibold mb-6 text-gray-800"> Lista de proyectos asignados </h2>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Lista de Proyectos */}
-          <div className="border rounded-lg overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b">
-              <h3 className="font-medium">Proyectos</h3>
-            </div>
-            <div className="p-2">
-              {projects && projects.length > 0 ? (
-                projects.map(project => (
-                  <div 
-                    key={project.id}
-                    className={`p-3 mb-2 cursor-pointer rounded-md border ${activeProject === project.id ? 'bg-blue-100 border-blue-300' : 'hover:bg-gray-50 border-gray-200'}`}
-                    onClick={() => setActiveProject(project.id)}
-                  >
-                    <div className="font-medium text-md mb-1">{project.name || project.id}</div>
-                    <div className="text-xs text-gray-600 bg-gray-100 p-1 rounded">
-                      {project.description || 'Sin descripción'}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="p-6 text-center text-gray-500 bg-gray-50 rounded-md">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <p className="mt-2 font-medium">No hay proyectos asignados</p>
-                  <p className="mt-1 text-sm">Este usuario no tiene proyectos asignados actualmente.</p>
-                </div>
-              )}
-            </div>
+        {(!projects || projects.length === 0) ? (
+          <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-gray-200">
+            <svg className="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 className="text-lg font-medium text-gray-800 mb-1">Sin proyectos asignados</h3>
+            <p className="text-gray-500 text-center max-w-md">
+              Este usuario no tiene proyectos asignados actualmente.
+            </p>
           </div>
-         
-          {/* Roles del Proyecto Seleccionado */}
-          <div className="border rounded-lg overflow-hidden lg:col-span-2">
-            <div className="bg-gray-50 px-4 py-3 border-b">
-              <h3 className="font-medium">
-                {activeProject && projects && projects.length > 0
-                  ? `Roles en ${projects.find(p => p.id === activeProject)?.name || activeProject}`
-                  : 'Seleccione un proyecto para ver los roles'}
-              </h3>
+        ) : (
+          <div>
+            {/* Selector de Proyectos */}
+            <div className="flex items-center space-x-2 mb-6 overflow-x-auto pb-3 scrollbar-hide">
+              <div className="text-sm font-medium text-gray-700 whitespace-nowrap mr-2">Proyecto:</div>
+              {projects.map(project => (
+                <button
+                  key={project.id}
+                  onClick={() => setActiveProject(project.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition
+                    ${activeProject === project.id
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                >
+                  {project.name || project.id}
+                </button>
+              ))}
             </div>
-            <div className="p-4">
-              {activeProject && projects && projects.length > 0 ? (
-                <>
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Roles Asignados:</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {/* Roles del proyecto seleccionado */}
-                      {projects.find(p => p.id === activeProject)?.roles?.length > 0 ? (
-                        projects.find(p => p.id === activeProject)?.roles?.map((role, idx) => (
-                          <div 
-                            key={idx}
-                            className="border border-green-200 p-3 rounded-md bg-green-50 flex items-center justify-between shadow-sm"
-                          >
-                            <div className="flex flex-col">
-                              <span className="font-medium text-gray-800">{role.name || role.id}</span>
-                              <span className="text-xs text-gray-500">Rol asignado al usuario</span>
+
+            {/* Contenido del Proyecto */}
+            {activeProject && (
+              <div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg">
+                  <div className="mb-4 sm:mb-0">
+                    <h3 className="text-lg font-medium text-gray-800">
+                      {projects.find(p => p.id === activeProject)?.name || 'Proyecto'}
+                    </h3>
+                    <p className="text-gray-600 mt-1 text-sm">
+                      {projects.find(p => p.id === activeProject)?.description || 'Sin descripción'}
+                    </p>
+                  </div>
+                  <div className="flex items-center bg-white px-3 py-1 rounded-full border shadow-sm">
+                    <span className="h-2 w-2 bg-green-500 rounded-full mr-2"></span>
+                    <span className="text-sm font-medium text-gray-700">Activo</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-b py-6 mb-6">
+                  <h4 className="font-medium text-gray-800 mb-4 flex items-center">
+                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Rol del Usuario
+                  </h4>
+
+                  {projects.find(p => p.id === activeProject)?.roles?.length ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {projects.find(p => p.id === activeProject)?.roles?.map((role, idx) => (
+                        <div key={idx} className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-4 shadow-sm hover:shadow-md transition">
+                          <div className="flex items-center mb-2">
+                            <div className="p-2 bg-white rounded-full mr-3 shadow">
+                              <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                              </svg>
                             </div>
-                            <div className="flex-shrink-0">
-                              <span className="text-xs px-2 py-1 rounded-full bg-green-500 text-white font-medium">
-                                Activo
-                              </span>
+                            <div>
+                              <div className="font-semibold text-gray-800">{role.name || 'Rol sin nombre'}</div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                                  Activo
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="col-span-2 text-center p-4 bg-gray-50 rounded-md text-gray-500">
-                          Este proyecto no tiene roles asignados al usuario.
                         </div>
-                      )}
+                      ))}
                     </div>
-                  </div>
-                </>
-              ) : (
-                <div className="py-12 text-center text-gray-500">
-                  <svg className="mx-auto h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="mt-2 text-xl font-medium">No hay roles para mostrar</p>
-                  <p className="mt-1">Seleccione un proyecto para ver los roles asignados.</p>
+                  ) : (
+                    <div className="bg-gray-50 rounded-lg p-6 text-center">
+                      <div className="inline-flex items-center justify-center p-3 bg-gray-100 rounded-full mb-4">
+                        <svg className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      </div>
+                      <h5 className="text-lg font-medium text-gray-700 mb-1">Sin roles asignados</h5>
+                      <p className="text-gray-500">No hay roles asignados para este proyecto</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 
 //src/app/dasboard/page.tsx
 
+//src/app/dasboard/page.tsx
+
 'use client'
 import { useState, useEffect } from 'react'
 import UserModal from '@/components/users/UserModal'
@@ -13,6 +15,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [searchField, setSearchField] = useState('employeeNumber') // Campo de búsqueda por defecto
   const router = useRouter()
   
   // Estados para la paginación
@@ -37,13 +40,34 @@ export default function DashboardPage() {
     fetchUsers()
   }, [])
 
-  // Filtrar usuarios basado en el término de búsqueda
+  // Filtrar usuarios basado en el término de búsqueda y el campo seleccionado
   const filteredUsers = users.filter(user => {
     if (!searchTerm) return true
     
-    // Buscar por número de empleado
-    const employeeNumber = user.EmployeeNumber || ''
-    return employeeNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    // Convertir término de búsqueda a minúsculas para comparación sin distinción entre mayúsculas y minúsculas
+    const searchTermLower = searchTerm.toLowerCase()
+    
+    // Seleccionar el campo por el cual filtrar
+    switch (searchField) {
+      case 'employeeNumber':
+        return (user.EmployeeNumber || '').toLowerCase().includes(searchTermLower)
+      case 'name':
+        return (user.Name || '').toLowerCase().includes(searchTermLower)
+      case 'email':
+        return (user.Email || '').toLowerCase().includes(searchTermLower)
+      case 'company':
+        return (user.KeyCompany || '').toLowerCase().includes(searchTermLower)
+      case 'all':
+        // Buscar en todos los campos
+        return (
+          (user.EmployeeNumber || '').toLowerCase().includes(searchTermLower) ||
+          (user.Name || '').toLowerCase().includes(searchTermLower) ||
+          (user.Email || '').toLowerCase().includes(searchTermLower) ||
+          (user.KeyCompany || '').toLowerCase().includes(searchTermLower)
+        )
+      default:
+        return false
+    }
   })
 
   // Lógica de paginación
@@ -74,6 +98,24 @@ export default function DashboardPage() {
     router.push(`/dashboard/users/${employeeNumber}`)
   }
 
+  // Obtener el placeholder adecuado según el campo seleccionado
+  const getPlaceholder = () => {
+    switch (searchField) {
+      case 'employeeNumber':
+        return 'Buscar por número de empleado'
+      case 'name':
+        return 'Buscar por nombre'
+      case 'email':
+        return 'Buscar por correo electrónico'
+      case 'company':
+        return 'Buscar por compañía'
+      case 'all':
+        return 'Buscar en todos los campos'
+      default:
+        return 'Buscar'
+    }
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -86,9 +128,26 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {/* Buscador por número de empleado */}
+      {/* Buscador con selector de campo */}
       <div className="mb-6">
-        <div className="flex items-center bg-white rounded-lg shadow-md p-2">
+        <div className="flex items-center bg-white rounded-lg shadow-md">
+          {/* Selector de campo de búsqueda */}
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value)}
+            className="border-none bg-transparent text-gray-600 font-medium pl-4 py-2 rounded-l-lg focus:outline-none"
+          >
+            <option value="employeeNumber">Número de Empleado</option>
+            <option value="name">Nombre</option>
+            <option value="email">Correo</option>
+            <option value="company">Compañía</option>
+            <option value="all">Todos los campos</option>
+          </select>
+
+          {/* Separador vertical */}
+          <div className="h-6 w-px bg-gray-300 mx-2"></div>
+
+          {/* Campo de búsqueda */}
           <div className="flex items-center w-full">
             <svg
               className="h-5 w-5 text-gray-400 mx-2"
@@ -106,7 +165,7 @@ export default function DashboardPage() {
             </svg>
             <input
               type="text"
-              placeholder="Buscar por número de empleado"
+              placeholder={getPlaceholder()}
               className="w-full px-4 py-2 rounded-lg focus:outline-none"
               value={searchTerm}
               onChange={(e) => {
@@ -149,7 +208,12 @@ export default function DashboardPage() {
           <div className="p-6 text-center text-red-600 text-lg">{error}</div>
         ) : filteredUsers.length === 0 ? (
           <div className="p-6 text-center text-lg text-gray-500">
-            {searchTerm ? "No se encontraron usuarios con ese número de empleado" : "No hay usuarios disponibles"}
+            {searchTerm ? `No se encontraron usuarios que coincidan con la búsqueda por ${
+              searchField === 'employeeNumber' ? 'número de empleado' :
+              searchField === 'name' ? 'nombre' :
+              searchField === 'email' ? 'correo electrónico' :
+              searchField === 'company' ? 'compañía' : 'todos los campos'
+            }` : "No hay usuarios disponibles"}
           </div>
         ) : (
           <>
@@ -270,3 +334,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

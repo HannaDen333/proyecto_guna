@@ -1,4 +1,4 @@
-//src/app/api/users/id/route
+// src/app/api/users/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
@@ -22,36 +22,47 @@ export async function GET(
     }
     
     const userData = userInfo[0];
+    const userId = userData.UserId;
     
-    // Obtener todos los proyectos (SecurityApplicationSystems)
-    // Para un enfoque más simple, no filtramos por usuario
-    const allProjects = await prisma.securityApplicationSystems.findMany({
-      select: {
-        ApplicationId: true,
-        ApplicationName: true,
-        Description: true
-      }
-    });
+    // Obtener proyectos/aplicaciones y roles desde la vista vw_UsuariosProyectosRoless
+    const userProjectsRoles = await prisma.$queryRaw`
+      SELECT * FROM vw_UsuariosProyectosRoless 
+      WHERE UserId = ${userId}
+    `;
     
-    // Obtener todos los roles (AspNetRoles)
-    const allRoles = await prisma.aspNetRoles.findMany({
-      select: {
-        Id: true,
-        Name: true
-      }
-    });
+    // Procesar los datos para agrupar roles por proyecto/aplicación
+    const projectsMap = new Map();
     
-    // Formatear los datos para el frontend
-    const userProjects = allProjects.map(project => ({
-      id: project.ApplicationId,
-      name: project.ApplicationName || 'Aplicación sin nombre',
-      description: project.Description || '',
-      // Asignar un rol aleatorio a cada proyecto (sólo para demostración)
-      roles: allRoles.slice(0, 2).map(role => ({
-        id: role.Id,
-        name: role.Name || 'Rol sin nombre'
-      }))
-    }));
+    if (Array.isArray(userProjectsRoles) && userProjectsRoles.length > 0) {
+      userProjectsRoles.forEach(item => {
+        const projectId = item.ProyectoId;
+        
+        if (!projectsMap.has(projectId)) {
+          projectsMap.set(projectId, {
+            id: projectId,
+            name: item.NombreProyecto || 'Aplicación sin nombre',
+            description: item.DescripcionProyecto || 'Sin descripción',
+            roles: []
+          });
+        }
+        
+        // Agregar rol si no está duplicado y es válido
+        if (item.RolId) {
+          const project = projectsMap.get(projectId);
+          const roleExists = project.roles.some(role => role.id === item.RolId);
+          
+          if (!roleExists) {
+            project.roles.push({
+              id: item.RolId,
+              name: item.NombreRol || 'Rol sin nombre'
+            });
+          }
+        }
+      });
+    }
+    
+    // Convertir el Map a un array de proyectos/aplicaciones
+    const userProjects = Array.from(projectsMap.values());
     
     // Devolver la información completa
     return NextResponse.json({
@@ -61,6 +72,9 @@ export async function GET(
     
   } catch (error) {
     console.error('Error al obtener detalles del usuario:', error);
-    return NextResponse.json({ error: 'Error al obtener detalles del usuario', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Error al obtener detalles del usuario', details: error.message }, 
+      { status: 500 }
+    );
   }
 }

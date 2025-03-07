@@ -503,3 +503,7 @@ model vw_UsuariosProyectosRoless {
 
   @@map("vw_UsuariosProyectosRoless")
 }
+
+model vw_usuariosProyectosExistentes {
+  
+}
