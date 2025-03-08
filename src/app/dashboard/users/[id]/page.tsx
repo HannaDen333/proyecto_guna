@@ -1,5 +1,6 @@
 // src/app/dashboard/users/[id]/page.tsx
 
+
 'use client';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -17,6 +18,17 @@ interface UserProject {
   roles: UserRole[];
 }
 
+interface CatalogProject {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+interface CatalogRole {
+  id: string;
+  name: string;
+}
+
 interface UserInfo {
   UserId: string;
   UserName?: string;
@@ -31,9 +43,6 @@ interface UserInfo {
   IsActive?: string;
   projects?: UserProject[];
 }
-interface userRole {
-  id : string;
-}
 
 export default function UserDetailPage() {
   const params = useParams();
@@ -43,6 +52,13 @@ export default function UserDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeProject, setActiveProject] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estados para catálogos
+  const [allProjects, setAllProjects] = useState<CatalogProject[]>([]);
+  const [allRoles, setAllRoles] = useState<CatalogRole[]>([]);
+  const [loadingCatalogs, setLoadingCatalogs] = useState(false);
+  const [selectedCatalogProject, setSelectedCatalogProject] = useState<string>('');
+  const [selectedCatalogRole, setSelectedCatalogRole] = useState<string>('');
 
   useEffect(() => {
     async function fetchUserData() {
@@ -73,6 +89,38 @@ export default function UserDetailPage() {
       fetchUserData();
     }
   }, [userId]);
+
+  // Efecto para cargar catálogos de proyectos y roles
+  useEffect(() => {
+    async function fetchCatalogs() {
+      try {
+        setLoadingCatalogs(true);
+        
+        // Cargar catálogo de proyectos
+        const projectsResponse = await fetch('/api/projects');
+        if (!projectsResponse.ok) {
+          throw new Error(`Error cargando proyectos: ${projectsResponse.status}`);
+        }
+        const projectsData = await projectsResponse.json();
+        setAllProjects(projectsData);
+        
+        // Cargar catálogo de roles
+        const rolesResponse = await fetch('/api/roles');
+        if (!rolesResponse.ok) {
+          throw new Error(`Error cargando roles: ${rolesResponse.status}`);
+        }
+        const rolesData = await rolesResponse.json();
+        setAllRoles(rolesData);
+        
+      } catch (err) {
+        console.error('Error al cargar catálogos:', err);
+      } finally {
+        setLoadingCatalogs(false);
+      }
+    }
+    
+    fetchCatalogs();
+  }, []);
 
   // Proyectos disponibles para el usuario (con verificación segura)
   const projects = user?.projects || [];
@@ -131,7 +179,7 @@ export default function UserDetailPage() {
           <div>
             <h3 className="text-sm font-medium text-gray-500">COMPAÑÍA</h3>
             <p className="mt-1 text-sm text-gray-900">{user.KeyCompany || '-'}</p>
-            </div>
+          </div>
           
           <div>
             <h3 className="text-sm font-medium text-gray-500">ÁREA</h3>
@@ -161,8 +209,8 @@ export default function UserDetailPage() {
       </div>
 
       {/* Sección de Proyectos y Roles - Diseño Dashboard */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-6 text-gray-800"> Lista de proyectos asignados </h2>
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-6 text-gray-800">Proyectos y Roles Asignados</h2>
         
         {(!projects || projects.length === 0) ? (
           <div className="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-gray-200">
@@ -256,6 +304,93 @@ export default function UserDetailPage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      {/* Catálogo de Proyectos y Roles */}
+      <div className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold mb-6 text-gray-800">Catálogo de Proyectos y Roles</h2>
+        
+        {loadingCatalogs ? (
+          <div className="flex justify-center items-center p-6">
+            <div className="text-gray-500">Cargando catálogos...</div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Selector de Proyectos */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Proyectos Disponibles</h3>
+              <div className="relative">
+                <select
+                  value={selectedCatalogProject}
+                  onChange={(e) => setSelectedCatalogProject(e.target.value)}
+                  className="block w-full rounded-lg border-gray-300 bg-white py-3 px-4 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 appearance-none"
+                >
+                  <option value="">Seleccione un proyecto</option>
+                  {allProjects.map(project => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 20 20" stroke="currentColor">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
+              </div>
+              {selectedCatalogProject && (
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <span className="font-medium">Proyecto seleccionado: </span>
+                    {allProjects.find(p => p.id === selectedCatalogProject)?.name}
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* Selector de Roles */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Roles Disponibles</h3>
+              <div className="relative">
+                <select
+                  value={selectedCatalogRole}
+                  onChange={(e) => setSelectedCatalogRole(e.target.value)}
+                  className="block w-full rounded-lg border-gray-300 bg-white py-3 px-4 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 appearance-none"
+                >
+                  <option value="">Seleccione un rol</option>
+                  {allRoles.map(role => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 20 20" stroke="currentColor">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
+              </div>
+              {selectedCatalogRole && (
+                <div className="mt-3 p-3 bg-green-50 border border-green-100 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    <span className="font-medium">Rol seleccionado: </span>
+                    {allRoles.find(r => r.id === selectedCatalogRole)?.name}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Acciones */}
+            <div className="md:col-span-2 mt-4 flex justify-end">
+              <button 
+                className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+                disabled={!selectedCatalogProject || !selectedCatalogRole}
+              >
+                Asignar proyecto  y rol
+              </button>
+            </div>
           </div>
         )}
       </div>

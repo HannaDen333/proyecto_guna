@@ -1,6 +1,6 @@
 
 //src/app/dasboard/page.tsx
-
+// src/app/dashboard/page.tsx
 //src/app/dasboard/page.tsx
 
 'use client'
@@ -124,7 +124,7 @@ export default function DashboardPage() {
           onClick={() => setIsModalOpen(true)}
           className="bg-gradient-to-r from-red-500 to-blue-500 text-white px-6 py-3 rounded-lg text-lg shadow-lg hover:opacity-90 transition"
         >
-          Crear Usuario
+          Habilitar cuenta
         </button>
       </div>
 
